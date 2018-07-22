@@ -232,7 +232,7 @@ Save that file and reconfigure GitLab. Make sure both Pi’s are running before 
 sudo gitlab-ctl reconfigure
 ```
  
-## Step 6: Start up GitLab CE
+## Step 5: Start up GitLab CE
 
 Go to http://gitlab.local in a browser.
 
