@@ -12,7 +12,7 @@ These instructions are based on [the guide found here](https://evil-zebra.com/ru
 
 ## Step 1: Set up the RPi units
  
-* Install Raspian (Debian Stretch at the time of writing) on both units.
+Install Raspian (Debian Stretch at the time of writing) on both units.
 
 ```bash
 sudo apt-get update
@@ -88,7 +88,7 @@ upstream gitlab-workhorse {
     server 192.168.1.1:8181;
 }
 ```
-** this should match /etc/gitlab/gitlab.rb external_url **
+**This should match /etc/gitlab/gitlab.rb external_url**
 
 ```bash
 server_name gitlab.local;
@@ -103,10 +103,14 @@ sudo rm /etc/nginx/sites-enabled/default
 ### Setup Static Ethernet
 You will be connecting the two Pi’s via an Ethernet cable, you do not have to plugin the cable yet but you can still setup the Pi to use a static IP for Ethernet.
  
-# open in text editor of your choice
+Open in text editor of your choice:
+```bash
 sudo nano /etc/dhcpcd.conf
+```
+
 Add and save the following to the end or beginning of the file.
- 
+
+```ini
 # static ethernet connection
 interface eth0
 static ip_address=192.168.1.2/24
@@ -117,13 +121,14 @@ interface wlan0
 static ip_address=192.168.1.2/24
 static routers=192.168.1.1
 static domain_name_servers=192.168.1.1
+```
+
+### Install GitLab CE
+Okay, now you can finally install GitLab CE. Once again there are perfectly clear instructions on the official GitLab CE page (https://about.gitlab.com/installation/#raspberry-pi-2), please follow steps 1 and 2. You will not need to install postfix, unless you wish to play around with email notifications.
  
-Install GitLab CE
-Okay, now you can finally install GitLab CE. Once again there are perfectly clear instructions on the official GitLab CE page (https://about.gitlab.com/installation/#raspberry-pi-2) , please follow steps 1 and 2. You will not need to install postfix, unless you wish to play around with email notifications.
- 
-Configure GitLab CE
 You need to setup GitLab to run only the required services. You can either uncomment and edit each of the values below in the default config file or you can just copy this config into the beginning of the file.
  
+```ini
 # open in text editor of your choice
 sudo nano /etc/gitlab/gitlab.rb
  
@@ -151,22 +156,28 @@ redis_master_role['enable'] = true
 redis['bind'] = '192.168.1.2'
 redis['port'] = 6379
 redis['password'] = 'your-redis-password'
- 
-Save and reconfigure.
- 
+```
+
+Save and reconfigure:
+
+```bash
 sudo gitlab-ctl reconfigure
+```
+ 
 At this point you can shutdown the Pi and move on to setting up the next Pi.
  
-Setup main GitLab Pi (Gitlab-core)
- 
-Follow the previous sections to install Raspbian, connect to Wi-Fi and setup SSH.
- 
-Setup Static Ethernet
+## Step 4: Setup main GitLab Pi (Gitlab-core)
+  
+### Setup Static Ethernet
 This Pi will also need a static Ethernet address, same process as before but the IP address is different.
  
+```bash
 sudo nano /etc/dhcpcd.conf
+```
+
 Add and save the following to the end or beginning of the file.
- 
+
+```ini
 # static ethernet connection
 interface eth0
 static ip_address=192.168.1.1/24
@@ -177,18 +188,24 @@ interface wlan0
 static ip_address=192.168.1.1/24
 static routers=192.168.1.2
 static domain_name_servers=192.168.1.2
+ ```
  
-Connect Devices
+### Connect Devices
+
 It is time to connect the two Raspberry Pi’s to each other so that your main GitLab Pi can communicate with the web-server Pi. Connect your Ethernet cable and then do a reboot to restart services. At this point you should plugin your web-server Pi, if it is not already on. If it is I would recommend rebooting that device as well.
  
-# restart the device
+### Restart the device
+
+```bash
 sudo reboot
+```
  
-Install & Configure GitLab CE
+### Install & Configure GitLab CE
 Follow the previous section on installing GitLab. Once again, we are only doing steps 1 and 2.
  
-Next you will need to configure some addresses and disable some services. You will be editing /etc/gitlab/gitlab.rb again.
+Next you will need to configure some addresses and disable some services. You will be editing /etc/gitlab/gitlab.rb again:
  
+```ini
 # setup an easy to remember and easy to type url
 external_url "http://gitlab-core.local "
 # GitLab will need to trust our web-server
@@ -207,12 +224,16 @@ gitlab_workhorse['listen_addr'] = '192.168.1.1:8181'
 postgresql['enable'] = false
 redis['enable'] = false
 nginx['enable'] = false
- 
+```
+
 Save that file and reconfigure GitLab. Make sure both Pi’s are running before reconfigure or you will get an error.
  
+```bash
 sudo gitlab-ctl reconfigure
-Start up GitLab CE
+```
  
+## Step 6: Start up GitLab CE
+
 Go to http://gitlab.local in a browser.
 
 
