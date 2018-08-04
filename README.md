@@ -23,7 +23,7 @@ sudo raspi-config
 Now set the hostname for one RPi as ‘gitlab’, and the other to ‘gitlab-core’.
 ‘gitlab-core’ should be the RPi with the biggest SD card, since this is where the data is held.
 
-** Use raspi-config to set the hostname ***
+**Use raspi-config to set the hostname***
 
 On both RPi units, make the following changes via rasp-config:
  
