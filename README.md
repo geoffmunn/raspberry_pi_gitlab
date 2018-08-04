@@ -207,7 +207,7 @@ Next you will need to configure some addresses and disable some services. You wi
  
 ```ini
 # setup an easy to remember and easy to type url
-external_url "http://gitlab-core.local "
+external_url "http://gitlab.local "
 # GitLab will need to trust our web-server
 gitlab_rails['trusted_proxies'] = ['192.168.1.2']
 web_server['external_users'] = ['www-data']
